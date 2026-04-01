@@ -1,9 +1,12 @@
+
+
+
 - hosts: all
   become: yes
 
   tasks:
     - name: Add SSH key for root
-      authorized_key:
+      ansible.builtin.authorized_key:
         user: root
         state: present
-        key: "{{ lookup('file', '~/.ssh/ansible_id.pub') }}"
+        key: "{{ lookup('file', '/root/.ssh/ansible_id.pub') }}"
