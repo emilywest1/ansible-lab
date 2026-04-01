@@ -1,0 +1,23 @@
+- hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Update apt cache (Ubuntu only)
+      apt:
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Upgrade packages (Ubuntu only)
+      apt:
+        upgrade: dist
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install networking tools (Ubuntu only)
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - iputils-ping
+        - ncat
+      when: ansible_distribution == "Ubuntu"

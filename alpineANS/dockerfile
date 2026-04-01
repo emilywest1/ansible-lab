@@ -1,0 +1,44 @@
+FROM alpine:3.19
+
+# Install packages
+RUN apk add --no-cache \
+    openssh \
+    bash \
+    python3 \
+    py3-pip \
+    sudo \
+    vim \
+    curl \
+    iputils \
+    openssh-client
+
+# Needed for Ansible (symlink python)
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
+# Create SSH directories for root and ansible user
+RUN mkdir -p /var/run/sshd /root/.ssh && chmod 700 /root/.ssh
+
+# Set root password (lab only!)
+RUN echo "root:root" | chpasswd
+
+# Create ansible user
+RUN adduser -D -s /bin/bash ansible && \
+    echo "ansible:ansible" | chpasswd && \
+    adduser ansible wheel && \
+    echo "ansible ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    mkdir -p /home/ansible/.ssh && \
+    chmod 700 /home/ansible/.ssh && \
+    chown ansible:ansible /home/ansible/.ssh
+
+# Configure SSH to allow root login & password auth
+RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# Generate SSH host keys
+RUN ssh-keygen -A
+
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH server
+CMD ["/usr/sbin/sshd", "-D"]

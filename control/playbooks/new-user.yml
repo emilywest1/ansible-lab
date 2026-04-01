@@ -1,0 +1,33 @@
+# this playbook takes in an extra parameter! If none are provided, it will default to the one listed in "vars", below.
+
+- name: Create new user on all nodes in inventory
+  hosts: nodes
+  become: true
+ 
+  vars:
+    new_username: "student"
+    new_password: "123"
+ 
+  tasks:
+    - name: Create the user
+      ansible.builtin.user:
+        name: "{{ new_username }}"
+        shell: "/bin/bash"
+        groups: "sudo"
+        append: true
+        create_home: true
+        state: present
+
+    - name: Set password for user
+      ansible.builtin.user:
+        name: "{{ new_username }}"
+        password: "{{ new_password | password_hash('sha512') }}"
+ 
+    - name: Look up the user
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ new_username }}"
+
+    - name: Confirm user was created
+      ansible.builtin.debug:
+        msg: "User '{{ new_username }}' exists with home {{ ansible_facts.getent_passwd[new_username][4] }}"

@@ -1,0 +1,12 @@
+---
+- name: Dump gathered facts locally
+  hosts: all
+  gather_facts: yes
+  become: no
+
+  tasks:
+    - name: Save all facts to a local YAML file
+      copy:
+        content: "{{ ansible_facts | to_nice_yaml }}"
+        dest: "./{{ inventory_hostname }}_facts.yml"
+      delegate_to: localhost

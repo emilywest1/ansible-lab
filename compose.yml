@@ -1,0 +1,68 @@
+services:
+  control:
+    build:
+      # Define the build for an Ubuntu 22.04 shell
+      # Dockerfile installs and configures SSH and installs Ansible
+      # Control node contains ansible.cfg for running playbooks.
+      context: ./control
+    container_name: control
+    hostname: control
+    networks:
+      lab:
+        ipv4_address: 192.168.10.10 # static/predetermined IP address
+    stdin_open: true
+    tty: true
+
+  node1:
+    build:
+      # Define the build for an Ubuntu 22.04 shell 
+      context: ./node
+    container_name: node_a
+    hostname: node_a
+    networks:
+      lab:
+        ipv4_address: 192.168.10.11 # static/predetermined IP address
+    stdin_open: true
+    tty: true
+
+  node2:
+    build:
+      context: ./node
+    container_name: node_b
+    hostname: node_b
+    networks:
+      lab:
+        ipv4_address: 192.168.10.12
+    stdin_open: true
+    tty: true
+
+  node3:
+    build:
+      context: ./node
+    container_name: node_c
+    hostname: node_c
+    networks:
+      lab:
+        ipv4_address: 192.168.10.13
+    stdin_open: true
+    tty: true
+
+  alpinenode:
+    build:
+      context: ./alpineANS
+    container_name: node_alp
+    hostname: node_alp
+    networks:
+      lab:
+        ipv4_address: 192.168.10.14
+    stdin_open: true
+    tty: true
+
+
+networks:
+  lab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+          gateway: 192.168.10.1

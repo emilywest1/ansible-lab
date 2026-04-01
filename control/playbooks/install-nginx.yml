@@ -1,0 +1,27 @@
+- name: Install and start nginx on all nodes
+  hosts: nodes
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Start and enable nginx service
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Confirm nginx is running
+      ansible.builtin.service_facts:
+
+    - name: Print nginx status
+      ansible.builtin.debug:
+        msg: "nginx is {{ ansible_facts.services['nginx'].state }} on {{ inventory_hostname }}"
