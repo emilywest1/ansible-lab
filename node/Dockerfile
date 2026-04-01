@@ -26,7 +26,8 @@ RUN mkdir -p /var/run/sshd && \
 
 # Allow password auth so the control node can push its SSH key
 RUN sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
-    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/override.conf
 
 # allow SSH protocol entry
 EXPOSE 22
